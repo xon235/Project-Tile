@@ -11,12 +11,12 @@ public class TileScript : MonoBehaviour
     public ColorName ColorName { get; private set; }
     public bool IsDummy{ get; private set; }
 
-    private bool isTileEnabled;
+    private bool _isTileEnabled;
     public bool IsTileEnabled
     {
         get
         {
-            return isTileEnabled;
+            return _isTileEnabled;
         }
         set
         {
@@ -31,7 +31,7 @@ public class TileScript : MonoBehaviour
             GetComponent<Rigidbody2D>().isKinematic = !(value && !IsDummy);
             GetComponent<BoxCollider2D>().enabled = (value && !IsDummy);
 
-            isTileEnabled = value;
+            _isTileEnabled = value;
         }
     }
 

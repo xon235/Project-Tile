@@ -11,22 +11,23 @@ public class TilePreviewScript : MonoBehaviour {
     public float smoothTime;
 
     private float tileWidth;
-    private List<GameObject> tiles = new List<GameObject>();
+    private List<TileScript> tiles = new List<TileScript>();
     private Vector3 targetPosition;
     private Vector3 tileHolderVelocity;
+    private int bufferTileIndex = 0;
 
-    private int currentTileIndex = 0;
+    private int _currentTileIndex = 0;
     public int CurrentTileIndex
     {
         get
         {
-            return currentTileIndex;
+            return _currentTileIndex;
         }
 
         set
         {
-            currentTileIndex = value;
-            targetPosition.x = -tileWidth * currentTileIndex;
+            _currentTileIndex = value;
+            targetPosition.x = -tileWidth * _currentTileIndex;
         }
     }
 
@@ -48,11 +49,11 @@ public class TilePreviewScript : MonoBehaviour {
 
         for (int i = 0; i < 100; i++)
         {
-            GameObject tile = Instantiate(
+            TileScript tile = Instantiate(
                 tilePrefab,
                 transform.position + new Vector3(i * tileOffset, 0, 0),
                 Quaternion.identity,
-                tileHolder.transform);
+                tileHolder.transform).GetComponent<TileScript>();
 
             tile.transform.localScale *= tileScale;
             tiles.Add(tile);
@@ -72,16 +73,6 @@ public class TilePreviewScript : MonoBehaviour {
 	
 	void Update ()
     {
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    CurrentTileIndex += 1;
-        //} else if (Input.GetMouseButtonDown(2))
-        //{
-        //    CurrentTileIndex = 0;
-        //} else if (Input.GetMouseButtonDown(1))
-        //{
-        //    CurrentTileIndex -= 1;
-        //}
 
         if (tileHolder.transform.position != targetPosition)
         {
@@ -103,5 +94,20 @@ public class TilePreviewScript : MonoBehaviour {
 
             tiles[i].GetComponent<TileScript>().IsTileEnabled = true;
         }
+    }
+
+    public ColorName GetCurrentTileColor()
+    {
+        return tiles[CurrentTileIndex].ColorName;
+    }
+
+    public void FlushBuffer()
+    {
+        bufferTileIndex = CurrentTileIndex;
+    }
+
+    public void ResetBuffer()
+    {
+        CurrentTileIndex = bufferTileIndex;
     }
 }

@@ -427,9 +427,10 @@ MonoBehaviour:
   tilePrefab: {fileID: 1888992201746816, guid: 8d106b9205491864ab49545665ce04e4, type: 2}
   boardPiecePrefab: {fileID: 1264931624256438, guid: 1a576e8b56825524c86fb5905f1be720,
     type: 2}
-  tilePreview: {fileID: 2071291793}
+  tilePreview: {fileID: 2071291795}
   tileSpawnDelay: 0.1
   tileSpawnOffset: 0.5
+  tileMovementTolerance: 0.0001
 --- !u!1 &1449613829
 GameObject:
   m_ObjectHideFlags: 0
@@ -737,4 +738,4 @@ MonoBehaviour:
   tileHolder: {fileID: 353261048}
   tileScale: 1
   tileOffset: 2
-  smoothTime: 0
+  smoothTime: 0.1
