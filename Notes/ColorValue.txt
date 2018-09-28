@@ -1,0 +1,59 @@
+RED
+  Top:
+    H: 0
+    S: 70
+    V: 100
+    A: 100
+  Side
+    H: 0
+    S: 80
+    V: 80
+    A: 100
+
+ORANGE
+  Top:
+    H: 27
+    S: 70
+    V: 100
+    A: 100
+  Side
+    H: 27
+    S: 80
+    V: 80
+    A: 100
+
+YELLOW
+  Top:
+    H: 55
+    S: 70
+    V: 100
+    A: 100
+  Side
+    H: 55
+    S: 80
+    V: 80
+    A: 100
+
+GREEN
+  Top:
+    H: 130
+    S: 70
+    V: 100
+    A: 100
+  Side
+    H: 130
+    S: 80
+    V: 80
+    A: 100
+
+BLUE
+  Top:
+    H: 185
+    S: 70
+    V: 100
+    A: 100
+  Side
+    H: 185
+    S: 80
+    V: 80
+    A: 100
