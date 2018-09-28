@@ -15,14 +15,9 @@ public class BoardScript : MonoBehaviour
     private GameObject[,] tilesOnBoard = new GameObject[7, 7];
     private GameObject[,] tilesOverBoard = new GameObject[7, 7];
 
-    //TEST
-    private Vector3[] spawnPoints;
-    //TEST END
-
     void Start ()
     {
         InitBoard();
-        PlaceTestTiles();
     }
 
     private void InitBoard()
@@ -44,35 +39,6 @@ public class BoardScript : MonoBehaviour
             }
         }
     }
-
-    //TEST
-    private void PlaceTestTiles()
-    {
-        spawnPoints = new Vector3[5];
-        for (int i = 0; i < spawnPoints.Length; i++)
-        {
-            spawnPoints[i] = boardPieces[3, i].transform.position + new Vector3(0, tileSpawnOffset, 0);
-        }
-        StartCoroutine(SpawnTile(1, tileSpawnDelay, 0));
-    }
-
-    private IEnumerator SpawnTile(float satrtDelay, float delay, int index)
-    {
-        yield return new WaitForSeconds(satrtDelay);
-        StartCoroutine(SpawnTile(delay, index));
-    }
-
-    private IEnumerator SpawnTile(float delay, int index)
-    {
-        if (index < 5)
-        {
-            yield return new WaitForSeconds(delay);
-            GameObject tile = Instantiate(tilePrefab, spawnPoints[index], Quaternion.identity);
-            tile.GetComponent<TileScript>().InitTile(GameManagerScript.GetTileColor((ColorName)index), false);
-            StartCoroutine(SpawnTile(delay, index + 1));
-        }
-    }
-    //TEST END
 
     void Update()
     {
