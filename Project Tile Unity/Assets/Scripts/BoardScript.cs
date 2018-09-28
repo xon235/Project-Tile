@@ -12,6 +12,8 @@ public class BoardScript : MonoBehaviour
     public float tileSpawnOffset;
 
     private GameObject[,] boardPieces = new GameObject[7,7];
+    private GameObject[,] tilesOnBoard = new GameObject[7, 7];
+    private GameObject[,] tilesOverBoard = new GameObject[7, 7];
 
     //TEST
     private Vector3[] spawnPoints;

@@ -29,6 +29,7 @@ public class TileScript : MonoBehaviour
             side.GetComponent<SpriteRenderer>().color = sideColor;
 
             GetComponent<Rigidbody2D>().isKinematic = !value || IsDummy;
+            GetComponent<BoxCollider2D>().enabled = !(!value || IsDummy);
 
             isTileEnabled = value;
         }

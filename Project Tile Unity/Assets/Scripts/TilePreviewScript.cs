@@ -72,16 +72,16 @@ public class TilePreviewScript : MonoBehaviour {
 	
 	void Update ()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            CurrentTileIndex += 1;
-        } else if (Input.GetMouseButtonDown(2))
-        {
-            CurrentTileIndex = 0;
-        } else if (Input.GetMouseButtonDown(1))
-        {
-            CurrentTileIndex -= 1;
-        }
+        //if (Input.GetMouseButtonDown(0))
+        //{
+        //    CurrentTileIndex += 1;
+        //} else if (Input.GetMouseButtonDown(2))
+        //{
+        //    CurrentTileIndex = 0;
+        //} else if (Input.GetMouseButtonDown(1))
+        //{
+        //    CurrentTileIndex -= 1;
+        //}
 
         if (tileHolder.transform.position != targetPosition)
         {
