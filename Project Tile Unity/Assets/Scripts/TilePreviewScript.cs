@@ -8,12 +8,12 @@ public class TilePreviewScript : MonoBehaviour {
     public GameObject tileHolder;
     public float tileScale;
     public float tileOffset;
-    public float scrollTime;
-    public float scrollMinDiff;
+    public float smoothTime;
 
     private float tileWidth;
     private List<GameObject> tiles = new List<GameObject>();
     private Vector3 targetPosition;
+    private Vector3 tileHolderVelocity;
 
     private int currentTileIndex = 0;
     public int CurrentTileIndex
@@ -32,8 +32,9 @@ public class TilePreviewScript : MonoBehaviour {
 
     void Start ()
     {
-        targetPosition = transform.position;
         tileWidth = tilePrefab.GetComponent<Renderer>().bounds.size.x;
+        targetPosition = transform.position;
+        tileHolderVelocity = Vector3.zero;
 
         InitTiles(1);
     }
@@ -69,8 +70,8 @@ public class TilePreviewScript : MonoBehaviour {
         }
     }
 	
-	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
         if (Input.GetMouseButtonDown(0))
         {
             CurrentTileIndex += 1;
@@ -84,13 +85,7 @@ public class TilePreviewScript : MonoBehaviour {
 
         if (tileHolder.transform.position != targetPosition)
         {
-            float speed = (tileHolder.transform.position - targetPosition).magnitude / scrollTime;
-            tileHolder.transform.position = Vector3.MoveTowards(tileHolder.transform.position, targetPosition, speed * Time.deltaTime);
-        }
-
-        if((tileHolder.transform.position - targetPosition).magnitude <= scrollMinDiff)
-        {
-            tileHolder.transform.position = targetPosition;
+            tileHolder.transform.position = Vector3.SmoothDamp(tileHolder.transform.position, targetPosition, ref tileHolderVelocity, smoothTime);
         }
 
         for(int i = CurrentTileIndex; i >= 0; i--)
