@@ -575,3 +575,5 @@ MonoBehaviour:
   tileScale: 1
   tileOffset: 2
   smoothTime: 0.1
+  selectScale: 1.5
+  selectOffset: -3

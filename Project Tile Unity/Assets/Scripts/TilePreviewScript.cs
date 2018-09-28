@@ -9,6 +9,8 @@ public class TilePreviewScript : MonoBehaviour {
     public float tileScale;
     public float tileOffset;
     public float smoothTime;
+    public float selectScale;
+    public float selectOffset;
 
     private float tileWidth;
     private List<TileScript> tiles = new List<TileScript>();
@@ -26,7 +28,17 @@ public class TilePreviewScript : MonoBehaviour {
 
         set
         {
+            Vector3 pos = tiles[CurrentTileIndex].transform.localPosition;
+            pos.y = 0;
+            tiles[CurrentTileIndex].transform.localPosition = pos;
+            tiles[CurrentTileIndex].transform.localScale = Vector3.one * 2;
+
             _currentTileIndex = value;
+
+            pos = tiles[CurrentTileIndex].transform.localPosition;
+            pos.y = selectOffset;
+            tiles[CurrentTileIndex].transform.localPosition = pos;
+            tiles[CurrentTileIndex].transform.localScale = Vector3.one * 2 * selectScale;
             targetPosition.x = -tileWidth * _currentTileIndex;
         }
     }
@@ -69,6 +81,8 @@ public class TilePreviewScript : MonoBehaviour {
             lastlastRandom = lastRandom;
             lastRandom = currentRandom;
         }
+
+        CurrentTileIndex = 0;
     }
 	
 	void Update ()

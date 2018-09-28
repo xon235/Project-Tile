@@ -104,7 +104,7 @@ public class BoardScript : MonoBehaviour
         {
             for (int i = 0; i < boardPiecesWithTilesAbove.Count; i++)
             {
-                StartCoroutine(boardPiecesWithTilesAbove[i].DropTile(tileSpawnDelay * i));
+                StartCoroutine(boardPiecesWithTilesAbove[i].DropTile(tilesOnBoard, tileSpawnDelay * i));
             }
             boardPiecesWithTilesAbove.Clear();
             tilePreview.FlushBuffer();
@@ -116,6 +116,7 @@ public class BoardScript : MonoBehaviour
             {
                 boardPiecesWithTilesAbove[i].ClearAboveTile();
             }
+
             boardPiecesWithTilesAbove.Clear();
             tilePreview.ResetBuffer();
         }
@@ -142,7 +143,6 @@ public class BoardScript : MonoBehaviour
         {
             TileScript tile = Instantiate(tilePrefab, transform).GetComponent<TileScript>();
             tile.InitTile(GameManagerScript.GetTileColor(tilePreview.GetCurrentTileColor()), false);
-            tilesOnBoard.Add(tile);
 
             tilePreview.CurrentTileIndex += 1;
 

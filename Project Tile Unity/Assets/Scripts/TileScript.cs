@@ -49,8 +49,6 @@ public class TileScript : MonoBehaviour
     {
         if(collision.gameObject.tag == tag 
             && transform.position.y > collision.transform.position.y)
-        {
             GetComponent<AudioSource>().Play();
-        }
     }
 }
