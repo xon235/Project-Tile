@@ -51,7 +51,6 @@ public class TileScript : MonoBehaviour
             && transform.position.y > collision.transform.position.y)
         {
             GetComponent<AudioSource>().Play();
-            Debug.Log(name + " : " + collision.transform.name + " " + "Playing Audio");
         }
     }
 }
