@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BoardScript : MonoBehaviour
 {
+    private int blockCount = 0;
 
     public GameObject tilePrefab;
     public GameObject boardPiecePrefab;
@@ -74,9 +75,9 @@ public class BoardScript : MonoBehaviour
             BoardPieceScript boardPieceScript = hit.transform.GetComponent<BoardPieceScript>();
             boardPieceScript.PlaceTileOver(tile, tileSpawnOffset);
 
-            boardPiecesWithTilesAbove.Add(boardPieceScript);
+            tile.name = blockCount++.ToString();
 
-            Debug.Log(hit.transform.name);
+            boardPiecesWithTilesAbove.Add(boardPieceScript);
         }
     }
 }

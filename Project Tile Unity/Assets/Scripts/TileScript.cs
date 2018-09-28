@@ -29,6 +29,7 @@ public class TileScript : MonoBehaviour
             side.GetComponent<SpriteRenderer>().color = sideColor;
 
             GetComponent<Rigidbody2D>().isKinematic = !(value && !IsDummy);
+            GetComponent<BoxCollider2D>().enabled = (value && !IsDummy);
 
             isTileEnabled = value;
         }
@@ -50,7 +51,7 @@ public class TileScript : MonoBehaviour
             && transform.position.y > collision.transform.position.y)
         {
             GetComponent<AudioSource>().Play();
-            Debug.Log("Playing Audio");
+            Debug.Log(name + " : " + collision.transform.name + " " + "Playing Audio");
         }
     }
 }
