@@ -737,5 +737,4 @@ MonoBehaviour:
   tileHolder: {fileID: 353261048}
   tileScale: 1
   tileOffset: 2
-  scrollTime: 0.1
-  scrollMinDiff: 0
+  smoothTime: 0

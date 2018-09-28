@@ -11,9 +11,8 @@ public class BoardScript : MonoBehaviour
     public float tileSpawnDelay;
     public float tileSpawnOffset;
 
-    private GameObject[,] boardPieces = new GameObject[7,7];
-    private GameObject[,] tilesOnBoard = new GameObject[7, 7];
-    private GameObject[,] tilesOverBoard = new GameObject[7, 7];
+    private BoardPieceScript[,] boardPieces = new BoardPieceScript[7,7];
+    private List<BoardPieceScript> boardPiecesWithTilesAbove = new List<BoardPieceScript>();
 
     void Start ()
     {
@@ -35,7 +34,9 @@ public class BoardScript : MonoBehaviour
                     Quaternion.identity,
                     transform);
                 boardPiece.name = "Board Piece[" + i + "][" + j + "]";
-                boardPieces[i, j] = boardPiece;
+
+                boardPieces[i, j] = boardPiece.GetComponent<BoardPieceScript>();
+                boardPieces[i, j].InitBoardPiece(i, j);
             }
         }
     }
@@ -44,20 +45,37 @@ public class BoardScript : MonoBehaviour
     {
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved)
         {
-            HandleInput(Input.GetTouch(0).position);
+            PlaceTileOverBoard(Input.GetTouch(0).position);
         }
 
         if (Input.GetMouseButton(0))
         {
-            HandleInput(Input.mousePosition);
+            PlaceTileOverBoard(Input.mousePosition);
+        }
+
+        if (Input.GetMouseButton(2))
+        {
+            for(int i = 0; i < boardPiecesWithTilesAbove.Count; i++)
+            {
+                StartCoroutine(boardPiecesWithTilesAbove[i].DropTile(tileSpawnDelay * i));
+            }
+            boardPiecesWithTilesAbove.Clear();
         }
     }
 
-    private void HandleInput(Vector3 position)
+    private void PlaceTileOverBoard(Vector3 position)
     {
         RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(position), Vector2.zero);
-        if (hit.transform != null)
+        if (hit.transform != null && hit.transform.tag == "Board Piece")
         {
+            TileScript tile = Instantiate(tilePrefab, transform).GetComponent<TileScript>();
+            tile.InitTile(GameManagerScript.GetTileColor(ColorName.RED), false);
+
+            BoardPieceScript boardPieceScript = hit.transform.GetComponent<BoardPieceScript>();
+            boardPieceScript.PlaceTileOver(tile, tileSpawnOffset);
+
+            boardPiecesWithTilesAbove.Add(boardPieceScript);
+
             Debug.Log(hit.transform.name);
         }
     }

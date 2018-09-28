@@ -28,8 +28,7 @@ public class TileScript : MonoBehaviour
             GetComponent<SpriteRenderer>().color = topColor;
             side.GetComponent<SpriteRenderer>().color = sideColor;
 
-            GetComponent<Rigidbody2D>().isKinematic = !value || IsDummy;
-            GetComponent<BoxCollider2D>().enabled = !(!value || IsDummy);
+            GetComponent<Rigidbody2D>().isKinematic = !(value && !IsDummy);
 
             isTileEnabled = value;
         }
@@ -41,8 +40,8 @@ public class TileScript : MonoBehaviour
         GetComponent<SpriteRenderer>().color = tileColor.TopColor;
         side.GetComponent<SpriteRenderer>().color = tileColor.SideColor;
 
-        GetComponent<Rigidbody2D>().isKinematic = isDummy;
         IsDummy = isDummy;
+        IsTileEnabled = isDummy;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

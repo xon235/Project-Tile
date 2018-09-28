@@ -21,9 +21,10 @@ GameObject:
   - component: {fileID: 4516500920047120}
   - component: {fileID: 212073847402586104}
   - component: {fileID: 61601222778673506}
+  - component: {fileID: 114195135646633800}
   m_Layer: 0
   m_Name: Board Piece
-  m_TagString: Untagged
+  m_TagString: Board Piece
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -64,8 +65,19 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.75, y: 0.75}
   m_EdgeRadius: 0
+--- !u!114 &114195135646633800
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1264931624256438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a101146d2249c3945a62f218b98a4f0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!212 &212073847402586104
 SpriteRenderer:
   m_ObjectHideFlags: 1
