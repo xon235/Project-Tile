@@ -155,63 +155,75 @@ public class BoardScript : MonoBehaviour
                 case TouchPhase.Ended:
                     break;
             }
-            PlaceTileOverBoard(Input.GetTouch(0).position);
+
+            BoardPieceScript boardPiece = GetCurrentBoardPiece(Input.mousePosition);
+            if (CheckTilePlacedOverAble(boardPiece))
+                PlaceTileOverBoard(boardPiece);
         }
 
         if (Input.GetMouseButton(0))
-            PlaceTileOverBoard(Input.mousePosition);
+        {
+            BoardPieceScript boardPiece = GetCurrentBoardPiece(Input.mousePosition);
+            if(boardPiece != null && CheckTilePlacedOverAble(boardPiece))
+                PlaceTileOverBoard(boardPiece);
+        }
         else if (Input.GetMouseButton(1))
             PlaceTilesOnBoard();
         else if (Input.GetMouseButton(2))
             ResetTilesOverBoard();
     }
 
-    private void PlaceTileOverBoard(Vector3 position)
+    private BoardPieceScript GetCurrentBoardPiece(Vector3 position)
     {
         RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(position), Vector2.zero, 0, LayerMask.GetMask("Board"));
         if (hit.transform != null)
+            return hit.transform.GetComponent<BoardPieceScript>();
+
+        return null;
+    }
+
+    private bool CheckTilePlacedOverAble(BoardPieceScript boardPiece)
+    {
+        bool isTileOnOrOver = false;
+        if (boardPiece.Y == 0)
+            isTileOnOrOver = true;
+        else
         {
-            BoardPieceScript boardPiece = hit.transform.GetComponent<BoardPieceScript>();
-
-            bool isTileOnOrOver = false;
-            if (boardPiece.Y == 0)
-                isTileOnOrOver = true;
-            else
-            {
-                BoardPieceScript boardPieceBelow = boardPieces[boardPiece.X, boardPiece.Y-1];
-                isTileOnOrOver = boardPieceBelow.IsTileOnOrOver;
-            }
-
-            bool isNextToLastTilePlacedOver = true;
-            if(boardPiecesWithTilesAbove.Count > 0)
-            {
-                BoardPieceScript lastPlacedOverBoardPiece = boardPiecesWithTilesAbove[boardPiecesWithTilesAbove.Count - 1];
-                isNextToLastTilePlacedOver =
-                    (boardPiece.X > 0
-                    && boardPieces[boardPiece.X - 1, boardPiece.Y] == lastPlacedOverBoardPiece)
-                    ||
-                    (boardPiece.X < boardWidth - 1
-                    && boardPieces[boardPiece.X + 1, boardPiece.Y] == lastPlacedOverBoardPiece)
-                    ||
-                    (boardPiece.Y > 0
-                    && boardPieces[boardPiece.X, boardPiece.Y-1] == lastPlacedOverBoardPiece)
-                    ||
-                    (boardPiece.Y < boardHeight - 1
-                    && boardPieces[boardPiece.X, boardPiece.Y + 1] == lastPlacedOverBoardPiece);
-            }
-
-            if (isTileOnOrOver && isNextToLastTilePlacedOver)
-            {
-                TileScript tile = Instantiate(tilePrefab, transform).GetComponent<TileScript>();
-                tile.InitTile(GameManagerScript.GetTileColor(tilePreview.GetCurrentTileColor()), false);
-                boardPiece.PlaceTileOver(tile, tileSpawnOffset);
-
-                tilePreview.CurrentTileIndex += 1;
-
-                boardPiecesWithTilesAbove.Add(boardPiece);
-                lastTilePlacedOverBox.transform.position = boardPiece.transform.position;
-            }
+            BoardPieceScript boardPieceBelow = boardPieces[boardPiece.X, boardPiece.Y - 1];
+            isTileOnOrOver = boardPieceBelow.IsTileOnOrOver;
         }
+
+        bool isNextToLastTilePlacedOver = true;
+        if (boardPiecesWithTilesAbove.Count > 0)
+        {
+            BoardPieceScript lastPlacedOverBoardPiece = boardPiecesWithTilesAbove[boardPiecesWithTilesAbove.Count - 1];
+            isNextToLastTilePlacedOver =
+                (boardPiece.X > 0
+                && boardPieces[boardPiece.X - 1, boardPiece.Y] == lastPlacedOverBoardPiece)
+                ||
+                (boardPiece.X < boardWidth - 1
+                && boardPieces[boardPiece.X + 1, boardPiece.Y] == lastPlacedOverBoardPiece)
+                ||
+                (boardPiece.Y > 0
+                && boardPieces[boardPiece.X, boardPiece.Y - 1] == lastPlacedOverBoardPiece)
+                ||
+                (boardPiece.Y < boardHeight - 1
+                && boardPieces[boardPiece.X, boardPiece.Y + 1] == lastPlacedOverBoardPiece);
+        }
+
+        return (isTileOnOrOver && isNextToLastTilePlacedOver);
+    }
+
+    private void PlaceTileOverBoard(BoardPieceScript boardPiece)
+    {
+        TileScript tile = Instantiate(tilePrefab, transform).GetComponent<TileScript>();
+        tile.InitTile(GameManagerScript.GetTileColor(tilePreview.GetCurrentTileColor()), false);
+        boardPiece.PlaceTileOver(tile, tileSpawnOffset);
+
+        tilePreview.CurrentTileIndex += 1;
+
+        boardPiecesWithTilesAbove.Add(boardPiece);
+        lastTilePlacedOverBox.transform.position = boardPiece.transform.position;
     }
 
     private void PlaceTilesOnBoard()
