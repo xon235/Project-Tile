@@ -227,6 +227,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   side: {fileID: 1688311689792696}
   tileDisabledAlpha: 0.4
+  clearTime: 0.2
+  circleCastOffsetScale: 0.8
+  circleCastRadius: 0.15
 --- !u!212 &212657796342060144
 SpriteRenderer:
   m_ObjectHideFlags: 1

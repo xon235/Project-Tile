@@ -7,7 +7,9 @@ public class BoardScript : MonoBehaviour
 {
     public GameObject tilePrefab;
     public GameObject boardPiecePrefab;
+    public GameObject boardPiecesHolder;
     public TilePreviewScript tilePreview;
+    public int minClearCount;
     public float tileSpawnDelay;
     public float tileSpawnOffset;
     public float tileMovementTolerance;
@@ -25,35 +27,7 @@ public class BoardScript : MonoBehaviour
         }
         set
         {
-            if(_isTilesMoving != value)
-            {
-                if (value == true)
-                    TurnBoardOff();
-                else
-                    TurnBoardOn();
-
-
-                _isTilesMoving = value;
-            }
-        }
-    }
-
-    private void TurnBoardOff()
-    {
-        for (int i = 0; i < 7; i++)
-            for (int j = 0; j < 7; j++)
-                boardPieces[i, j].GetComponent<BoxCollider2D>().enabled = false;
-    }
-
-    private void TurnBoardOn()
-    {
-        for (int i = 0; i < 7; i++)
-        {
-            for (int j = 0; j < 7; j++)
-            {
-                RaycastHit2D hit = Physics2D.Raycast(boardPieces[i, j].transform.position, Vector2.zero, 0, LayerMask.GetMask("Tiles"));
-                boardPieces[i, j].GetComponent<BoxCollider2D>().enabled = (hit.transform == null);
-            }
+            _isTilesMoving = value;
         }
     }
 
@@ -75,7 +49,7 @@ public class BoardScript : MonoBehaviour
                     boardPiecePrefab,
                     transform.position + new Vector3(-6 + i * BoardPieceWidth, -6 + j * BoardPieceHeight, 0),
                     Quaternion.identity,
-                    transform);
+                    boardPiecesHolder.transform);
                 boardPiece.name = "Board Piece[" + i + ", " + j + "]";
 
                 boardPieces[i, j] = boardPiece.GetComponent<BoardPieceScript>();
@@ -88,8 +62,81 @@ public class BoardScript : MonoBehaviour
 
     void Update()
     {
-        UpdateIsTilesMoving();
+        UpdateBoard();
+        if (!IsTilesMoving)
+        {
+            HandleInput();
+        }
+    }
 
+    private void UpdateBoard()
+    {
+        bool wasTilesMoving = IsTilesMoving;
+        UpdateIsTilesMoving();
+        if (!IsTilesMoving)
+        {
+            if(wasTilesMoving != IsTilesMoving)
+            {
+                ClearTiles();
+                UpdatePlaceableTiles();
+            }
+            HandleInput();
+        }
+    }
+
+    private void UpdateIsTilesMoving()
+    {
+        bool wasTilesMoving = IsTilesMoving;
+        foreach (TileScript tS in tilesOnBoard)
+        {
+            if (tS.GetComponent<Rigidbody2D>().velocity.magnitude > tileMovementTolerance)
+            {
+                IsTilesMoving = true;
+                return;
+            }
+        }
+
+        IsTilesMoving = false;
+    }
+
+    private int ClearTiles()
+    {
+        HashSet<TileScript> tilesToClear = new HashSet<TileScript>();
+        foreach(TileScript tile in tilesOnBoard)
+        {
+            TileScript[] adjacentSameColorTiles = tile.GetAdjacentSameColorTiles();
+            if(adjacentSameColorTiles.Length >= minClearCount-1)
+            {
+                tilesToClear.Add(tile);
+                foreach (TileScript adjacentSameColorTile in adjacentSameColorTiles)
+                    tilesToClear.Add(adjacentSameColorTile);
+            }
+        }
+
+        foreach (TileScript tileToClear in tilesToClear)
+        {
+            tilesOnBoard.Remove(tileToClear);
+            StartCoroutine(tileToClear.Clear());
+        }
+
+        return tilesToClear.Count;
+    }
+
+    private void UpdatePlaceableTiles()
+    {
+        for (int i = 0; i < 7; i++)
+        {
+            for (int j = 0; j < 7; j++)
+            {
+                RaycastHit2D hit = Physics2D.Raycast(boardPieces[i, j].transform.position, Vector2.zero, 0, LayerMask.GetMask("Tiles"));
+                boardPieces[i, j].GetComponent<BoxCollider2D>().enabled = (hit.transform == null);
+            }
+        }
+    }
+
+
+    private void HandleInput()
+    {
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved)
         {
             PlaceTileOverBoard(Input.GetTouch(0).position);
@@ -120,20 +167,6 @@ public class BoardScript : MonoBehaviour
             boardPiecesWithTilesAbove.Clear();
             tilePreview.ResetBuffer();
         }
-    }
-
-    private void UpdateIsTilesMoving()
-    {
-        foreach (TileScript tS in tilesOnBoard)
-        {
-            if (tS.GetComponent<Rigidbody2D>().velocity.magnitude > tileMovementTolerance)
-            {
-                IsTilesMoving = true;
-                return;
-            }
-        }
-
-        IsTilesMoving = false;
     }
 
     private void PlaceTileOverBoard(Vector3 position)
