@@ -380,6 +380,7 @@ MonoBehaviour:
   boardPiecePrefab: {fileID: 1264931624256438, guid: 1a576e8b56825524c86fb5905f1be720,
     type: 2}
   boardPiecesHolder: {fileID: 1513626334}
+  ground: {fileID: 1649967264}
   tilePreview: {fileID: 2071291795}
   lastTilePlacedOverBox: {fileID: 631601934}
   minClearCount: 3

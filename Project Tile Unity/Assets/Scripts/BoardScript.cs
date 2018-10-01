@@ -12,6 +12,7 @@ public class BoardScript : MonoBehaviour
     public GameObject tilePrefab;
     public GameObject boardPiecePrefab;
     public GameObject boardPiecesHolder;
+    public GameObject ground;
     public TilePreviewScript tilePreview;
     public BoxCollider2D lastTilePlacedOverBox;
     public int minClearCount;
@@ -70,6 +71,7 @@ public class BoardScript : MonoBehaviour
             }
         }
 
+        ground.transform.localPosition = new Vector3(0, -boardPieceHeight * boardHeight / 2, 0);
         IsTilesMoving = false;
     }
 
