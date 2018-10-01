@@ -5,16 +5,19 @@ using UnityEngine;
 
 public class BoardScript : MonoBehaviour
 {
+    public int boardWidth;
+    public int boardHeight;
     public GameObject tilePrefab;
     public GameObject boardPiecePrefab;
     public GameObject boardPiecesHolder;
     public TilePreviewScript tilePreview;
+    public GameObject lastTilePlacedOverBox;
     public int minClearCount;
     public float tileSpawnDelay;
     public float tileSpawnOffset;
     public float tileMovementTolerance;
 
-    private BoardPieceScript[,] boardPieces = new BoardPieceScript[7,7];
+    private BoardPieceScript[,] boardPieces;
     private List<TileScript> tilesOnBoard = new List<TileScript>();
     private List<BoardPieceScript> boardPiecesWithTilesAbove = new List<BoardPieceScript>();
 
@@ -38,12 +41,13 @@ public class BoardScript : MonoBehaviour
 
     private void InitBoard()
     {
+        boardPieces = new BoardPieceScript[boardWidth, boardHeight];
         float BoardPieceWidth = boardPiecePrefab.GetComponent<Renderer>().bounds.size.x;
         float BoardPieceHeight = boardPiecePrefab.GetComponent<Renderer>().bounds.size.y;
 
-        for (int i = 0; i < 7; i++)
+        for (int i = 0; i < boardWidth; i++)
         {
-            for (int j = 0; j < 7; j++)
+            for (int j = 0; j < boardHeight; j++)
             {
                 GameObject boardPiece = Instantiate(
                     boardPiecePrefab,
@@ -127,9 +131,9 @@ public class BoardScript : MonoBehaviour
 
     private void UpdatePlaceableTiles()
     {
-        for (int i = 0; i < 7; i++)
+        for (int i = 0; i < boardWidth; i++)
         {
-            for (int j = 0; j < 7; j++)
+            for (int j = 0; j < boardHeight; j++)
             {
                 RaycastHit2D hit = Physics2D.Raycast(boardPieces[i, j].transform.position, Vector2.zero, 0, LayerMask.GetMask("Tiles"));
                 boardPieces[i, j].GetComponent<BoxCollider2D>().enabled = (hit.transform == null);
@@ -145,7 +149,6 @@ public class BoardScript : MonoBehaviour
             switch (Input.GetTouch(0).phase)
             {
                 case TouchPhase.Began:
-
                     break;
                 case TouchPhase.Moved:
                     break;
@@ -168,15 +171,46 @@ public class BoardScript : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(position), Vector2.zero, 0, LayerMask.GetMask("Board"));
         if (hit.transform != null)
         {
-            TileScript tile = Instantiate(tilePrefab, transform).GetComponent<TileScript>();
-            tile.InitTile(GameManagerScript.GetTileColor(tilePreview.GetCurrentTileColor()), false);
+            BoardPieceScript boardPiece = hit.transform.GetComponent<BoardPieceScript>();
 
-            tilePreview.CurrentTileIndex += 1;
+            bool isTileOnOrOver = false;
+            if (boardPiece.Y == 0)
+                isTileOnOrOver = true;
+            else
+            {
+                BoardPieceScript boardPieceBelow = boardPieces[boardPiece.X, boardPiece.Y-1];
+                isTileOnOrOver = boardPieceBelow.IsTileOnOrOver;
+            }
 
-            BoardPieceScript boardPieceScript = hit.transform.GetComponent<BoardPieceScript>();
-            boardPieceScript.PlaceTileOver(tile, tileSpawnOffset);
+            bool isNextToLastTilePlacedOver = true;
+            if(boardPiecesWithTilesAbove.Count > 0)
+            {
+                BoardPieceScript lastPlacedOverBoardPiece = boardPiecesWithTilesAbove[boardPiecesWithTilesAbove.Count - 1];
+                isNextToLastTilePlacedOver =
+                    (boardPiece.X > 0
+                    && boardPieces[boardPiece.X - 1, boardPiece.Y] == lastPlacedOverBoardPiece)
+                    ||
+                    (boardPiece.X < boardWidth - 1
+                    && boardPieces[boardPiece.X + 1, boardPiece.Y] == lastPlacedOverBoardPiece)
+                    ||
+                    (boardPiece.Y > 0
+                    && boardPieces[boardPiece.X, boardPiece.Y-1] == lastPlacedOverBoardPiece)
+                    ||
+                    (boardPiece.Y < boardHeight - 1
+                    && boardPieces[boardPiece.X, boardPiece.Y + 1] == lastPlacedOverBoardPiece);
+            }
 
-            boardPiecesWithTilesAbove.Add(boardPieceScript);
+            if (isTileOnOrOver && isNextToLastTilePlacedOver)
+            {
+                TileScript tile = Instantiate(tilePrefab, transform).GetComponent<TileScript>();
+                tile.InitTile(GameManagerScript.GetTileColor(tilePreview.GetCurrentTileColor()), false);
+                boardPiece.PlaceTileOver(tile, tileSpawnOffset);
+
+                tilePreview.CurrentTileIndex += 1;
+
+                boardPiecesWithTilesAbove.Add(boardPiece);
+                lastTilePlacedOverBox.transform.position = boardPiece.transform.position;
+            }
         }
     }
 
@@ -188,6 +222,14 @@ public class BoardScript : MonoBehaviour
         }
         boardPiecesWithTilesAbove.Clear();
         tilePreview.FlushBuffer();
+    }
+
+    private void ResetLastTileOverBoard()
+    {
+        BoardPieceScript lastBoardPiecesWithTilesAbove = boardPiecesWithTilesAbove[boardPiecesWithTilesAbove.Count - 1];
+        lastBoardPiecesWithTilesAbove.ClearAboveTile();
+        boardPiecesWithTilesAbove.Remove(lastBoardPiecesWithTilesAbove);
+        tilePreview.CurrentTileIndex -= 1;
     }
 
     private void ResetTilesOverBoard()
