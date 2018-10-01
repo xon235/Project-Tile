@@ -9,8 +9,6 @@ public class TilePreviewScript : MonoBehaviour {
     public float tileScale;
     public float tileOffset;
     public float smoothTime;
-    public float selectScale;
-    public float selectOffset;
 
     private float tileWidth;
     private List<TileScript> tiles = new List<TileScript>();
@@ -28,25 +26,15 @@ public class TilePreviewScript : MonoBehaviour {
 
         set
         {
-            Vector3 pos = tiles[CurrentTileIndex].transform.localPosition;
-            pos.y = 0;
-            tiles[CurrentTileIndex].transform.localPosition = pos;
-            tiles[CurrentTileIndex].transform.localScale = Vector3.one * 2;
-
             _currentTileIndex = value;
-
-            pos = tiles[CurrentTileIndex].transform.localPosition;
-            pos.y = selectOffset;
-            tiles[CurrentTileIndex].transform.localPosition = pos;
-            tiles[CurrentTileIndex].transform.localScale = Vector3.one * 2 * selectScale;
-            targetPosition.x = -tileWidth * _currentTileIndex;
+            targetPosition.x = transform.position.x -tileWidth * _currentTileIndex;
         }
     }
 
     void Start ()
     {
         tileWidth = tilePrefab.GetComponent<Renderer>().bounds.size.x;
-        targetPosition = transform.position;
+        targetPosition =transform.position;
         tileHolderVelocity = Vector3.zero;
 
         InitTiles(1);
@@ -63,7 +51,7 @@ public class TilePreviewScript : MonoBehaviour {
         {
             TileScript tile = Instantiate(
                 tilePrefab,
-                transform.position + new Vector3(i * tileOffset, 0, 0),
+                tileHolder.transform.position + new Vector3(i * tileOffset, 0, 0),
                 Quaternion.identity,
                 tileHolder.transform).GetComponent<TileScript>();
 

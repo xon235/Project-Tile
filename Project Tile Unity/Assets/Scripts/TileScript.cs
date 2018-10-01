@@ -51,4 +51,30 @@ public class TileScript : MonoBehaviour
             && transform.position.y > collision.transform.position.y)
             GetComponent<AudioSource>().Play();
     }
+
+    public TileScript[] GetAdjacentSameColorTiles()
+    {
+        List<TileScript> adjacentSameColorTiles = new List<TileScript>();
+        RaycastHit2D[] hits = new RaycastHit2D[4];
+        hits[0] = Physics2D.Raycast(transform.position, Vector2.up, GetComponent<Renderer>().bounds.size.y, LayerMask.GetMask("Tiles"));
+        hits[1] = Physics2D.Raycast(transform.position, Vector2.down, GetComponent<Renderer>().bounds.size.y, LayerMask.GetMask("Tiles"));
+        hits[2] = Physics2D.Raycast(transform.position, Vector2.left, GetComponent<Renderer>().bounds.size.x, LayerMask.GetMask("Tiles"));
+        hits[3] = Physics2D.Raycast(transform.position, Vector2.right, GetComponent<Renderer>().bounds.size.x, LayerMask.GetMask("Tiles"));
+
+        foreach(RaycastHit2D hit in hits)
+        {
+            if (hit.transform != null)
+                adjacentSameColorTiles.Add(hit.transform.GetComponent<TileScript>());
+        }
+
+        return adjacentSameColorTiles.ToArray();
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.DrawRay(transform.position, Vector2.up * GetComponent<Renderer>().bounds.size.y);
+        Gizmos.DrawRay(transform.position, Vector2.down * GetComponent<Renderer>().bounds.size.y);
+        Gizmos.DrawRay(transform.position, Vector2.left * GetComponent<Renderer>().bounds.size.x);
+        Gizmos.DrawRay(transform.position, Vector2.right * GetComponent<Renderer>().bounds.size.x);
+    }
 }
