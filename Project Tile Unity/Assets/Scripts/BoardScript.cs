@@ -140,23 +140,27 @@ public class BoardScript : MonoBehaviour
 
     private void HandleInput()
     {
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved)
+        if (Input.touchCount > 0)
         {
+            switch (Input.GetTouch(0).phase)
+            {
+                case TouchPhase.Began:
+
+                    break;
+                case TouchPhase.Moved:
+                    break;
+                case TouchPhase.Ended:
+                    break;
+            }
             PlaceTileOverBoard(Input.GetTouch(0).position);
         }
 
         if (Input.GetMouseButton(0))
-        {
             PlaceTileOverBoard(Input.mousePosition);
-        }
         else if (Input.GetMouseButton(1))
-        {
             PlaceTilesOnBoard();
-        }
         else if (Input.GetMouseButton(2))
-        {
             ResetTilesOverBoard();
-        }
     }
 
     private void PlaceTileOverBoard(Vector3 position)
