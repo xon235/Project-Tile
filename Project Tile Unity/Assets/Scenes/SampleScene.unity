@@ -309,7 +309,7 @@ BoxCollider2D:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 631601932}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
@@ -379,7 +379,7 @@ MonoBehaviour:
     type: 2}
   boardPiecesHolder: {fileID: 1513626334}
   tilePreview: {fileID: 2071291795}
-  lastTilePlacedOverBox: {fileID: 631601932}
+  lastTilePlacedOverBox: {fileID: 631601934}
   minClearCount: 3
   tileSpawnDelay: 0.1
   tileSpawnOffset: 0.5

@@ -11,7 +11,7 @@ public class BoardScript : MonoBehaviour
     public GameObject boardPiecePrefab;
     public GameObject boardPiecesHolder;
     public TilePreviewScript tilePreview;
-    public GameObject lastTilePlacedOverBox;
+    public BoxCollider2D lastTilePlacedOverBox;
     public int minClearCount;
     public float tileSpawnDelay;
     public float tileSpawnOffset;
@@ -156,16 +156,25 @@ public class BoardScript : MonoBehaviour
                     break;
             }
 
-            BoardPieceScript boardPiece = GetCurrentBoardPiece(Input.mousePosition);
+            Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.touches[0].position);
+            BoardPieceScript boardPiece = GetCurrentBoardPiece(worldPoint);
             if (CheckTilePlacedOverAble(boardPiece))
                 PlaceTileOverBoard(boardPiece);
         }
 
         if (Input.GetMouseButton(0))
         {
-            BoardPieceScript boardPiece = GetCurrentBoardPiece(Input.mousePosition);
-            if(boardPiece != null && CheckTilePlacedOverAble(boardPiece))
-                PlaceTileOverBoard(boardPiece);
+            Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            if (lastTilePlacedOverBox.OverlapPoint(worldPoint))
+            {
+                ResetLastTileOverBoard();
+            }
+            else
+            {
+                BoardPieceScript boardPiece = GetCurrentBoardPiece(worldPoint);
+                if (boardPiece != null && CheckTilePlacedOverAble(boardPiece))
+                    PlaceTileOverBoard(boardPiece);
+            }
         }
         else if (Input.GetMouseButton(1))
             PlaceTilesOnBoard();
@@ -175,7 +184,7 @@ public class BoardScript : MonoBehaviour
 
     private BoardPieceScript GetCurrentBoardPiece(Vector3 position)
     {
-        RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(position), Vector2.zero, 0, LayerMask.GetMask("Board"));
+        RaycastHit2D hit = Physics2D.Raycast(position, Vector2.zero, 0, LayerMask.GetMask("Board"));
         if (hit.transform != null)
             return hit.transform.GetComponent<BoardPieceScript>();
 
@@ -223,7 +232,20 @@ public class BoardScript : MonoBehaviour
         tilePreview.CurrentTileIndex += 1;
 
         boardPiecesWithTilesAbove.Add(boardPiece);
-        lastTilePlacedOverBox.transform.position = boardPiece.transform.position;
+        UpdateLastTilePlacedOverBox();
+    }
+
+    private void UpdateLastTilePlacedOverBox()
+    {
+        if (boardPiecesWithTilesAbove.Count > 1)
+        {
+            lastTilePlacedOverBox.enabled = true;
+            lastTilePlacedOverBox.transform.position = boardPiecesWithTilesAbove[boardPiecesWithTilesAbove.Count - 2].transform.position;
+        }
+        else
+        {
+            lastTilePlacedOverBox.enabled = false;
+        }
     }
 
     private void PlaceTilesOnBoard()
@@ -242,6 +264,7 @@ public class BoardScript : MonoBehaviour
         lastBoardPiecesWithTilesAbove.ClearAboveTile();
         boardPiecesWithTilesAbove.Remove(lastBoardPiecesWithTilesAbove);
         tilePreview.CurrentTileIndex -= 1;
+        UpdateLastTilePlacedOverBox();
     }
 
     private void ResetTilesOverBoard()
@@ -253,5 +276,6 @@ public class BoardScript : MonoBehaviour
 
         boardPiecesWithTilesAbove.Clear();
         tilePreview.ResetBuffer();
+        UpdateLastTilePlacedOverBox();
     }
 }
