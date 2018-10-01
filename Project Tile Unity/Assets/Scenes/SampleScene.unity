@@ -301,7 +301,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 638451249}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &631601934
 BoxCollider2D:
@@ -354,9 +354,9 @@ Transform:
   m_LocalPosition: {x: 0, y: -8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 631601933}
   - {fileID: 2071291794}
   - {fileID: 1513626335}
+  - {fileID: 631601933}
   - {fileID: 1649967266}
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -372,8 +372,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57fa830295bb6e54bbe90e52a2db1c53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boardWidth: 7
-  boardHeight: 7
+  boardWidth: 5
+  boardHeight: 5
+  numOfPreviewTiles: 100
+  previewSeed: 1
   tilePrefab: {fileID: 1888992201746816, guid: 8d106b9205491864ab49545665ce04e4, type: 2}
   boardPiecePrefab: {fileID: 1264931624256438, guid: 1a576e8b56825524c86fb5905f1be720,
     type: 2}
@@ -383,7 +385,7 @@ MonoBehaviour:
   minClearCount: 3
   tileSpawnDelay: 0.1
   tileSpawnOffset: 0.5
-  tileMovementTolerance: 0.0001
+  tileMovementTolerance: 0.001
 --- !u!1 &1513626334
 GameObject:
   m_ObjectHideFlags: 0
@@ -406,11 +408,11 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1513626334}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.2745087, y: 13.243552, z: 0.50341797}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 638451249}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1649967264
 GameObject:
@@ -646,7 +648,7 @@ Transform:
   - {fileID: 2032549559}
   - {fileID: 1716155856}
   m_Father: {fileID: 638451249}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2071291795
 MonoBehaviour:

@@ -7,6 +7,8 @@ public class BoardScript : MonoBehaviour
 {
     public int boardWidth;
     public int boardHeight;
+    public int numOfPreviewTiles;
+    public int previewSeed;
     public GameObject tilePrefab;
     public GameObject boardPiecePrefab;
     public GameObject boardPiecesHolder;
@@ -34,6 +36,11 @@ public class BoardScript : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+        tilePreview.InitTilePreview(numOfPreviewTiles, previewSeed);
+    }
+
     void Start ()
     {
         InitBoard();
@@ -42,8 +49,10 @@ public class BoardScript : MonoBehaviour
     private void InitBoard()
     {
         boardPieces = new BoardPieceScript[boardWidth, boardHeight];
-        float BoardPieceWidth = boardPiecePrefab.GetComponent<Renderer>().bounds.size.x;
-        float BoardPieceHeight = boardPiecePrefab.GetComponent<Renderer>().bounds.size.y;
+        float boardPieceWidth = boardPiecePrefab.GetComponent<Renderer>().bounds.size.x;
+        float boardPieceHeight = boardPiecePrefab.GetComponent<Renderer>().bounds.size.y;
+        float initialXOffset = -boardPieceWidth * boardWidth / 2 + boardPieceWidth/2;
+        float initialYOffset = -boardPieceHeight * boardHeight / 2 + boardPieceHeight / 2;
 
         for (int i = 0; i < boardWidth; i++)
         {
@@ -51,7 +60,7 @@ public class BoardScript : MonoBehaviour
             {
                 GameObject boardPiece = Instantiate(
                     boardPiecePrefab,
-                    transform.position + new Vector3(-6 + i * BoardPieceWidth, -6 + j * BoardPieceHeight, 0),
+                    transform.position + new Vector3(initialXOffset + i * boardPieceWidth, initialYOffset + j * boardPieceHeight, 0),
                     Quaternion.identity,
                     boardPiecesHolder.transform);
                 boardPiece.name = "Board Piece[" + i + ", " + j + "]";
@@ -149,17 +158,30 @@ public class BoardScript : MonoBehaviour
             switch (Input.GetTouch(0).phase)
             {
                 case TouchPhase.Began:
-                    break;
                 case TouchPhase.Moved:
+                    Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.touches[0].position);
+                    if (lastTilePlacedOverBox.OverlapPoint(worldPoint))
+                    {
+                        ResetLastTileOverBoard();
+                    }
+                    else
+                    {
+                        BoardPieceScript boardPiece = GetCurrentBoardPiece(worldPoint);
+                        if (boardPiece != null && CheckTilePlacedOverAble(boardPiece))
+                            PlaceTileOverBoard(boardPiece);
+                    }
                     break;
                 case TouchPhase.Ended:
+                    if (boardPiecesWithTilesAbove.Count < minClearCount)
+                    {
+                        ResetTilesOverBoard();
+                    }
+                    else
+                    {
+                        PlaceTilesOnBoard();
+                    }
                     break;
             }
-
-            Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.touches[0].position);
-            BoardPieceScript boardPiece = GetCurrentBoardPiece(worldPoint);
-            if (CheckTilePlacedOverAble(boardPiece))
-                PlaceTileOverBoard(boardPiece);
         }
 
         if (Input.GetMouseButton(0))
@@ -177,9 +199,19 @@ public class BoardScript : MonoBehaviour
             }
         }
         else if (Input.GetMouseButton(1))
-            PlaceTilesOnBoard();
+        {
+            if(boardPiecesWithTilesAbove.Count < minClearCount)
+            {
+                ResetTilesOverBoard();
+            } else
+            {
+                PlaceTilesOnBoard();
+            }
+        }
         else if (Input.GetMouseButton(2))
+        {
             ResetTilesOverBoard();
+        }
     }
 
     private BoardPieceScript GetCurrentBoardPiece(Vector3 position)
@@ -225,14 +257,22 @@ public class BoardScript : MonoBehaviour
 
     private void PlaceTileOverBoard(BoardPieceScript boardPiece)
     {
-        TileScript tile = Instantiate(tilePrefab, transform).GetComponent<TileScript>();
-        tile.InitTile(GameManagerScript.GetTileColor(tilePreview.GetCurrentTileColor()), false);
-        boardPiece.PlaceTileOver(tile, tileSpawnOffset);
+        try
+        {
+            TileColor colorName = GameManagerScript.GetTileColor(tilePreview.GetCurrentTileColor());
+            TileScript tile = Instantiate(tilePrefab, transform).GetComponent<TileScript>();
+            tile.InitTile(colorName, false);
+            boardPiece.PlaceTileOver(tile, tileSpawnOffset);
 
-        tilePreview.CurrentTileIndex += 1;
+            tilePreview.CurrentTileIndex += 1;
 
-        boardPiecesWithTilesAbove.Add(boardPiece);
-        UpdateLastTilePlacedOverBox();
+            boardPiecesWithTilesAbove.Add(boardPiece);
+            UpdateLastTilePlacedOverBox();
+        }
+        catch
+        {
+            return;
+        }
     }
 
     private void UpdateLastTilePlacedOverBox()

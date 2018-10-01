@@ -38,4 +38,12 @@ public class GameManagerScript : MonoBehaviour
     {
         return tileColorDict[colorName];
     }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+    }
 }

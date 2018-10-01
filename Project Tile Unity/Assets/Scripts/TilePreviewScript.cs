@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TilePreviewScript : MonoBehaviour {
-
+public class TilePreviewScript : MonoBehaviour
+{
     public GameObject tilePrefab;
     public GameObject tileHolder;
     public float tileScale;
     public float tileOffset;
     public float smoothTime;
 
+    private int numOfPreviewTiles;
+    private int previewSeed;
     private float tileWidth;
     private List<TileScript> tiles = new List<TileScript>();
     private Vector3 targetPosition;
@@ -31,13 +33,19 @@ public class TilePreviewScript : MonoBehaviour {
         }
     }
 
+    public void InitTilePreview(int numOfPreviewTiles, int previewSeed)
+    {
+        this.numOfPreviewTiles = numOfPreviewTiles;
+        this.previewSeed = previewSeed;
+    }
+
     void Start ()
     {
         tileWidth = tilePrefab.GetComponent<Renderer>().bounds.size.x;
         targetPosition =transform.position;
         tileHolderVelocity = Vector3.zero;
 
-        InitTiles(1);
+        InitTiles(previewSeed);
     }
 
     private void InitTiles(int seed)
@@ -47,7 +55,7 @@ public class TilePreviewScript : MonoBehaviour {
         int lastlastRandom, lastRandom, currentRandom;
         lastlastRandom = lastRandom = currentRandom = -1;
 
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < numOfPreviewTiles; i++)
         {
             TileScript tile = Instantiate(
                 tilePrefab,
@@ -81,7 +89,7 @@ public class TilePreviewScript : MonoBehaviour {
             tileHolder.transform.position = Vector3.SmoothDamp(tileHolder.transform.position, targetPosition, ref tileHolderVelocity, smoothTime);
         }
 
-        for(int i = CurrentTileIndex; i >= 0; i--)
+        for(int i = CurrentTileIndex-1; i >= 0; i--)
         {
             if (tiles[i].GetComponent<TileScript>().IsTileEnabled == false)
                 break;
@@ -89,7 +97,7 @@ public class TilePreviewScript : MonoBehaviour {
             tiles[i].GetComponent<TileScript>().IsTileEnabled = false;
         }
 
-        for (int i = CurrentTileIndex; i < 100; i++)
+        for (int i = CurrentTileIndex; i < numOfPreviewTiles; i++)
         {
             if (tiles[i].GetComponent<TileScript>().IsTileEnabled == true)
                 break;
@@ -100,7 +108,14 @@ public class TilePreviewScript : MonoBehaviour {
 
     public ColorName GetCurrentTileColor()
     {
-        return tiles[CurrentTileIndex].ColorName;
+        try
+        {
+            return tiles[CurrentTileIndex].ColorName;
+        }
+        catch
+        {
+            throw;
+        }
     }
 
     public void FlushBuffer()
