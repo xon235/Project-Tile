@@ -81,6 +81,9 @@ public class BoardScript : MonoBehaviour
                 UpdatePlaceableTiles();
             }
             HandleInput();
+        } else
+        {
+            ResetTilesOverBoard();
         }
     }
 
@@ -146,26 +149,13 @@ public class BoardScript : MonoBehaviour
         {
             PlaceTileOverBoard(Input.mousePosition);
         }
-
-        if (Input.GetMouseButton(1))
+        else if (Input.GetMouseButton(1))
         {
-            for (int i = 0; i < boardPiecesWithTilesAbove.Count; i++)
-            {
-                StartCoroutine(boardPiecesWithTilesAbove[i].DropTile(tilesOnBoard, tileSpawnDelay * i));
-            }
-            boardPiecesWithTilesAbove.Clear();
-            tilePreview.FlushBuffer();
+            PlaceTilesOnBoard();
         }
-
-        if (Input.GetMouseButton(2))
+        else if (Input.GetMouseButton(2))
         {
-            for (int i = 0; i < boardPiecesWithTilesAbove.Count; i++)
-            {
-                boardPiecesWithTilesAbove[i].ClearAboveTile();
-            }
-
-            boardPiecesWithTilesAbove.Clear();
-            tilePreview.ResetBuffer();
+            ResetTilesOverBoard();
         }
     }
 
@@ -184,5 +174,26 @@ public class BoardScript : MonoBehaviour
 
             boardPiecesWithTilesAbove.Add(boardPieceScript);
         }
+    }
+
+    private void PlaceTilesOnBoard()
+    {
+        for (int i = 0; i < boardPiecesWithTilesAbove.Count; i++)
+        {
+            StartCoroutine(boardPiecesWithTilesAbove[i].DropTile(tilesOnBoard, tileSpawnDelay * i));
+        }
+        boardPiecesWithTilesAbove.Clear();
+        tilePreview.FlushBuffer();
+    }
+
+    private void ResetTilesOverBoard()
+    {
+        for (int i = 0; i < boardPiecesWithTilesAbove.Count; i++)
+        {
+            boardPiecesWithTilesAbove[i].ClearAboveTile();
+        }
+
+        boardPiecesWithTilesAbove.Clear();
+        tilePreview.ResetBuffer();
     }
 }
