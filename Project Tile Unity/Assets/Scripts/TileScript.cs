@@ -2,11 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TileScript : MonoBehaviour
 {
-
     public GameObject side;
+    public Text pointText;
     public float tileDisabledAlpha;
     public float clearTime;
     public float circleCastOffsetScale;
@@ -14,6 +15,7 @@ public class TileScript : MonoBehaviour
 
     public ColorName ColorName { get; private set; }
     public bool IsDummy{ get; private set; }
+    public int Point { get; private set; }
 
     private bool _isTileEnabled;
     public bool IsTileEnabled
@@ -39,7 +41,7 @@ public class TileScript : MonoBehaviour
         }
     }
 
-    public void InitTile(TileColor tileColor, bool isDummy)
+    public void InitTile(TileColor tileColor, bool isDummy, int point)
     {
         ColorName = tileColor.Name;
         GetComponent<SpriteRenderer>().color = tileColor.TopColor;
@@ -47,6 +49,10 @@ public class TileScript : MonoBehaviour
 
         IsDummy = isDummy;
         IsTileEnabled = isDummy;
+
+        Point = isDummy ? 0 : point;
+        pointText.text = isDummy ? "" : point.ToString();
+        pointText.color = isDummy ? tileColor.TopColor : tileColor.SideColor;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

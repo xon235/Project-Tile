@@ -72,7 +72,8 @@ public class TilePreviewScript : MonoBehaviour
 
             tile.GetComponent<TileScript>().InitTile(
                 GameManagerScript.GetTileColor((ColorName)currentRandom),
-                true);
+                true, 
+                GameManagerScript.GetTilePoint());
 
             lastlastRandom = lastRandom;
             lastRandom = currentRandom;

@@ -263,13 +263,14 @@ public class BoardScript : MonoBehaviour
         {
             TileColor colorName = GameManagerScript.GetTileColor(tilePreview.GetCurrentTileColor());
             TileScript tile = Instantiate(tilePrefab, transform).GetComponent<TileScript>();
-            tile.InitTile(colorName, false);
+            tile.InitTile(colorName, false, GameManagerScript.GetTilePoint(boardPiecesWithTilesAbove.Count));
+
             boardPiece.PlaceTileOver(tile, tileSpawnOffset);
+            boardPiecesWithTilesAbove.Add(boardPiece);
+
+            UpdateLastTilePlacedOverBox();
 
             tilePreview.CurrentTileIndex += 1;
-
-            boardPiecesWithTilesAbove.Add(boardPiece);
-            UpdateLastTilePlacedOverBox();
         }
         catch
         {

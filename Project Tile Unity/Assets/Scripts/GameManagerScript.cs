@@ -46,4 +46,13 @@ public class GameManagerScript : MonoBehaviour
             Application.Quit();
         }
     }
+
+    public static int GetTilePoint(int index = 0)
+    {
+        if(index > 2)
+        {
+            return 10 * (index - 1);
+        }
+        return 10;
+    }
 }
