@@ -173,7 +173,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &331944847
 GameObject:
@@ -218,6 +218,8 @@ MonoBehaviour:
   - Name: 4
     TopColor: {r: 0.3, g: 0.94166654, b: 1, a: 1}
     SideColor: {r: 0.16, g: 0.74666655, b: 0.8, a: 1}
+  scoreText: {fileID: 608801981}
+  turnsTookText: {fileID: 407777941}
 --- !u!4 &331944849
 Transform:
   m_ObjectHideFlags: 0
@@ -651,7 +653,7 @@ Transform:
   - {fileID: 631601933}
   - {fileID: 1649967266}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &638451250
 MonoBehaviour:
@@ -924,7 +926,7 @@ GameObject:
   - component: {fileID: 1824613374}
   - component: {fileID: 1824613373}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Screen Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1000,7 +1002,7 @@ RectTransform:
   - {fileID: 365915576}
   - {fileID: 1530428808}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

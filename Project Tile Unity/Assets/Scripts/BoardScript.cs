@@ -131,12 +131,15 @@ public class BoardScript : MonoBehaviour
             }
         }
 
+        int points = 0;
         foreach (TileScript tileToClear in tilesToClear)
         {
+            points += tileToClear.Point;
             tilesOnBoard.Remove(tileToClear);
             StartCoroutine(tileToClear.Clear());
         }
 
+        GameManagerScript.Instance.AddPointsToScore(points);
         return tilesToClear.Count;
     }
 
@@ -261,9 +264,9 @@ public class BoardScript : MonoBehaviour
     {
         try
         {
-            TileColor colorName = GameManagerScript.GetTileColor(tilePreview.GetCurrentTileColor());
+            TileColor colorName = GameManagerScript.Instance.GetTileColor(tilePreview.GetCurrentTileColor());
             TileScript tile = Instantiate(tilePrefab, transform).GetComponent<TileScript>();
-            tile.InitTile(colorName, false, GameManagerScript.GetTilePoint(boardPiecesWithTilesAbove.Count));
+            tile.InitTile(colorName, false, GameManagerScript.Instance.GetTilePoint(boardPiecesWithTilesAbove.Count));
 
             boardPiece.PlaceTileOver(tile, tileSpawnOffset);
             boardPiecesWithTilesAbove.Add(boardPiece);
@@ -299,6 +302,7 @@ public class BoardScript : MonoBehaviour
         }
         boardPiecesWithTilesAbove.Clear();
         tilePreview.FlushBuffer();
+        GameManagerScript.Instance.IncrementTurnsTook();
     }
 
     private void ResetLastTileOverBoard()
