@@ -99,11 +99,7 @@ public class GameManagerScript : MonoBehaviour
 
     public int GetTilePoint(int index = 0)
     {
-        if(index > 2)
-        {
-            return 10 * (index - 1);
-        }
-        return 10;
+        return 10 * ((index)/3 + 1);
     }
 
     public void AddPointsToScore(int points)
