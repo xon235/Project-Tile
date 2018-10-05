@@ -41,7 +41,8 @@ public class GameManagerScript : MonoBehaviour
     public Text turnsTookText;
     public int maxNumOfRecords;
 
-    public GameRecord[] records { get; private set; }
+    public GameRecord[] Records { get; private set; }
+    public bool IsGameOver { get; private set; }
 
     private int score = 0;
     private int turnsTook = 0;
@@ -119,11 +120,11 @@ public class GameManagerScript : MonoBehaviour
 
     public void SaveResult(bool finished)
     {
-        records[maxNumOfRecords].Score = score;
-        records[maxNumOfRecords].TurnsTook = turnsTook;
-        records[maxNumOfRecords].Finished = finished;
+        Records[maxNumOfRecords].Score = score;
+        Records[maxNumOfRecords].TurnsTook = turnsTook;
+        Records[maxNumOfRecords].Finished = finished;
 
-        Array.Sort<GameRecord>(records, (a, b) =>
+        Array.Sort<GameRecord>(Records, (a, b) =>
         {
             int result = b.Score.CompareTo(a.Score);
             result = result == 0 ? b.TurnsTook.CompareTo(a.TurnsTook) : result;
@@ -133,9 +134,9 @@ public class GameManagerScript : MonoBehaviour
 
         for (int i = 0; i < maxNumOfRecords; i++)
         {
-            PlayerPrefs.SetInt(PLAYER_PREFS_SCORE + i, records[i].Score);
-            PlayerPrefs.SetInt(PLAYER_PREFS_TURNS_TOOK + i, records[i].TurnsTook);
-            PlayerPrefs.SetInt(PLAYER_PREFS_FINSHED + i, records[i].Finished? 1: 0);
+            PlayerPrefs.SetInt(PLAYER_PREFS_SCORE + i, Records[i].Score);
+            PlayerPrefs.SetInt(PLAYER_PREFS_TURNS_TOOK + i, Records[i].TurnsTook);
+            PlayerPrefs.SetInt(PLAYER_PREFS_FINSHED + i, Records[i].Finished? 1: 0);
         }
 
         if (finished)
@@ -161,12 +162,19 @@ public class GameManagerScript : MonoBehaviour
 
     public void LoadRecords()
     {
-        records = new GameRecord[maxNumOfRecords+1];
+        Records = new GameRecord[maxNumOfRecords+1];
         for(int i = 0; i < maxNumOfRecords; i++)
         {
-            records[i].Score = PlayerPrefs.GetInt(PLAYER_PREFS_SCORE+i, 0);
-            records[i].TurnsTook = PlayerPrefs.GetInt(PLAYER_PREFS_TURNS_TOOK + i, 0);
-            records[i].Finished = PlayerPrefs.GetInt(PLAYER_PREFS_FINSHED + i, 0) != 0;
+            Records[i].Score = PlayerPrefs.GetInt(PLAYER_PREFS_SCORE+i, 0);
+            Records[i].TurnsTook = PlayerPrefs.GetInt(PLAYER_PREFS_TURNS_TOOK + i, 0);
+            Records[i].Finished = PlayerPrefs.GetInt(PLAYER_PREFS_FINSHED + i, 0) != 0;
         }
+    }
+
+    public void GameOver(bool isFinished)
+    {
+        IsGameOver = true;
+        SaveResult(isFinished);
+        StartCoroutine(GameManagerScript.Instance.LoadRankScene());
     }
 }

@@ -7,17 +7,20 @@ public class BoardPieceScript : MonoBehaviour
     public int X { get; private set; }
     public int Y { get; private set; }
 
-    public bool IsTileOnOrOver
+    public bool IsTileOn
     {
         get
         {
-            if(tileAbove != null)
-                return true;
-            else
-            {
-                RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.zero, 0, LayerMask.GetMask("Tiles"));
-                return (hit.transform != null);
-            }
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.zero, 0, LayerMask.GetMask("Tiles"));
+            return (hit.transform != null);
+        }
+    }
+
+    public bool IsTileOver
+    {
+        get
+        {
+            return tileAbove != null;
         }
     }
 

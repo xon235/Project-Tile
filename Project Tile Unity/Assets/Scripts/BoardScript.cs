@@ -77,11 +77,14 @@ public class BoardScript : MonoBehaviour
 
     void Update()
     {
-        UpdateBoard();
-        if (!IsTilesMoving)
+        if (!GameManagerScript.Instance.IsGameOver)
         {
-            CheckGameOver();
-            HandleInput();
+            UpdateBoard();
+            if (!IsTilesMoving)
+            {
+                CheckGameOver();
+                HandleInput();
+            }
         }
     }
 
@@ -158,15 +161,35 @@ public class BoardScript : MonoBehaviour
 
     private void CheckGameOver()
     {
-        if(tilesOnBoard.Count > boardWidth * boardHeight - 3
-            || tilePreview.IsFinished)
+        for (int i = 0; i < boardWidth; i++)
         {
-            GameManagerScript.Instance.SaveResult(tilePreview.IsFinished);
-            StartCoroutine(GameManagerScript.Instance.LoadRankScene());
+            for (int j = 0; j < boardHeight; j++)
+            {
+                if(!boardPieces[i, j].IsTileOn)
+                {
+                    int adjacentBoardPieceWithoutTileOnCount = 0;
+                    if (0 < i && !boardPieces[i - 1, j].IsTileOn)
+                        adjacentBoardPieceWithoutTileOnCount += 1;
+
+                    if (i < boardWidth-1 && !boardPieces[i + 1, j].IsTileOn)
+                        adjacentBoardPieceWithoutTileOnCount += 1;
+
+                    if (0 < j && !boardPieces[i, j - 1].IsTileOn)
+                        adjacentBoardPieceWithoutTileOnCount += 1;
+
+                    if (j < boardHeight-1 && !boardPieces[i, j+1].IsTileOn)
+                        adjacentBoardPieceWithoutTileOnCount += 1;
+
+                    if (adjacentBoardPieceWithoutTileOnCount >= 2)
+                        return;
+                }
+            }
         }
+
+        GameManagerScript.Instance.GameOver(tilePreview.IsFinished);
     }
 
-private void HandleInput()
+    private void HandleInput()
     {
         if (Input.touchCount > 0)
         {
@@ -242,11 +265,13 @@ private void HandleInput()
     {
         bool isTileOnOrOver = false;
         if (boardPiece.Y == 0)
+        {
             isTileOnOrOver = true;
+        }
         else
         {
             BoardPieceScript boardPieceBelow = boardPieces[boardPiece.X, boardPiece.Y - 1];
-            isTileOnOrOver = boardPieceBelow.IsTileOnOrOver;
+            isTileOnOrOver = boardPieceBelow.IsTileOn || boardPieceBelow.IsTileOver;
         }
 
         bool isNextToLastTilePlacedOver = true;
