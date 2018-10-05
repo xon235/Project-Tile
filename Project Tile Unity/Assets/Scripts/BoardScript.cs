@@ -263,17 +263,6 @@ public class BoardScript : MonoBehaviour
 
     private bool CheckTilePlacedOverAble(BoardPieceScript boardPiece)
     {
-        bool isTileOnOrOver = false;
-        if (boardPiece.Y == 0)
-        {
-            isTileOnOrOver = true;
-        }
-        else
-        {
-            BoardPieceScript boardPieceBelow = boardPieces[boardPiece.X, boardPiece.Y - 1];
-            isTileOnOrOver = boardPieceBelow.IsTileOn || boardPieceBelow.IsTileOver;
-        }
-
         bool isNextToLastTilePlacedOver = true;
         if (boardPiecesWithTilesAbove.Count > 0)
         {
@@ -292,7 +281,7 @@ public class BoardScript : MonoBehaviour
                 && boardPieces[boardPiece.X, boardPiece.Y + 1] == lastPlacedOverBoardPiece);
         }
 
-        return (isTileOnOrOver && isNextToLastTilePlacedOver);
+        return (isNextToLastTilePlacedOver);
     }
 
     private void PlaceTileOverBoard(BoardPieceScript boardPiece)
