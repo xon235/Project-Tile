@@ -80,6 +80,7 @@ public class BoardScript : MonoBehaviour
         UpdateBoard();
         if (!IsTilesMoving)
         {
+            CheckGameOver();
             HandleInput();
         }
     }
@@ -155,8 +156,17 @@ public class BoardScript : MonoBehaviour
         }
     }
 
+    private void CheckGameOver()
+    {
+        if(tilesOnBoard.Count > boardWidth * boardHeight - 3
+            || tilePreview.IsFinished)
+        {
+            GameManagerScript.Instance.SaveResult(tilePreview.IsFinished);
+            StartCoroutine(GameManagerScript.Instance.LoadRankScene());
+        }
+    }
 
-    private void HandleInput()
+private void HandleInput()
     {
         if (Input.touchCount > 0)
         {
@@ -324,5 +334,5 @@ public class BoardScript : MonoBehaviour
         boardPiecesWithTilesAbove.Clear();
         tilePreview.ResetBuffer();
         UpdateLastTilePlacedOverBox();
-    }
+    }    
 }

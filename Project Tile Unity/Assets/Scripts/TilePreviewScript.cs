@@ -10,6 +10,8 @@ public class TilePreviewScript : MonoBehaviour
     public float tileOffset;
     public float smoothTime;
 
+    public bool IsFinished { get; private set; }
+
     private int numOfPreviewTiles;
     private int previewSeed;
     private float tileWidth;
@@ -50,6 +52,7 @@ public class TilePreviewScript : MonoBehaviour
 
     private void InitTiles(int seed)
     {
+        IsFinished = false;
         Random.InitState(seed);
 
         int lastlastRandom, lastRandom, currentRandom;
@@ -115,6 +118,7 @@ public class TilePreviewScript : MonoBehaviour
         }
         catch
         {
+            IsFinished = true;
             throw;
         }
     }
