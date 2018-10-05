@@ -213,7 +213,7 @@ private void HandleInput()
                     PlaceTileOverBoard(boardPiece);
             }
         }
-        else if (Input.GetMouseButton(1))
+        else if (Input.GetMouseButtonUp(0))
         {
             if(boardPiecesWithTilesAbove.Count < minClearCount)
             {
