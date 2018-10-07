@@ -35,6 +35,14 @@ public class TilePreviewScript : MonoBehaviour
         }
     }
 
+    public int TilesLeft
+    {
+        get
+        {
+            return Mathf.Clamp(numOfPreviewTiles - _currentTileIndex, 0, numOfPreviewTiles);
+        }
+    }
+
     public void InitTilePreview(int numOfPreviewTiles, int previewSeed)
     {
         this.numOfPreviewTiles = numOfPreviewTiles;
@@ -52,7 +60,6 @@ public class TilePreviewScript : MonoBehaviour
 
     private void InitTiles(int seed)
     {
-        IsFinished = false;
         Random.InitState(seed);
 
         int lastlastRandom, lastRandom, currentRandom;
@@ -118,7 +125,6 @@ public class TilePreviewScript : MonoBehaviour
         }
         catch
         {
-            IsFinished = true;
             throw;
         }
     }

@@ -79,30 +79,22 @@ public class BoardScript : MonoBehaviour
     {
         if (!GameManagerScript.Instance.IsGameOver)
         {
-            UpdateBoard();
+            bool wasTilesMoving = IsTilesMoving;
+            UpdateIsTilesMoving();
             if (!IsTilesMoving)
             {
-                CheckGameOver();
+                if (wasTilesMoving != IsTilesMoving)
+                {
+                    ClearTiles();
+                    CheckGameOver();
+                    UpdatePlaceableTiles();
+                }
                 HandleInput();
             }
-        }
-    }
-
-    private void UpdateBoard()
-    {
-        bool wasTilesMoving = IsTilesMoving;
-        UpdateIsTilesMoving();
-        if (!IsTilesMoving)
-        {
-            if(wasTilesMoving != IsTilesMoving)
+            else
             {
-                ClearTiles();
-                UpdatePlaceableTiles();
+                ResetTilesOverBoard();
             }
-            HandleInput();
-        } else
-        {
-            ResetTilesOverBoard();
         }
     }
 
@@ -147,6 +139,42 @@ public class BoardScript : MonoBehaviour
         return tilesToClear.Count;
     }
 
+    private void CheckGameOver()
+    {
+        if (tilePreview.TilesLeft == 0)
+        {
+            GameManagerScript.Instance.GameOver(true);
+        } else
+        {
+            for (int i = 0; i < boardWidth; i++)
+            {
+                for (int j = 0; j < boardHeight; j++)
+                {
+                    if (!boardPieces[i, j].IsTileOn)
+                    {
+                        int adjacentBoardPieceWithoutTileOnCount = 0;
+                        if (0 < i && !boardPieces[i - 1, j].IsTileOn)
+                            adjacentBoardPieceWithoutTileOnCount += 1;
+
+                        if (i < boardWidth - 1 && !boardPieces[i + 1, j].IsTileOn)
+                            adjacentBoardPieceWithoutTileOnCount += 1;
+
+                        if (0 < j && !boardPieces[i, j - 1].IsTileOn)
+                            adjacentBoardPieceWithoutTileOnCount += 1;
+
+                        if (j < boardHeight - 1 && !boardPieces[i, j + 1].IsTileOn)
+                            adjacentBoardPieceWithoutTileOnCount += 1;
+
+                        if (adjacentBoardPieceWithoutTileOnCount >= 2)
+                            return;
+                    }
+                }
+            }
+
+            GameManagerScript.Instance.GameOver(false);
+        }
+    }
+
     private void UpdatePlaceableTiles()
     {
         for (int i = 0; i < boardWidth; i++)
@@ -157,36 +185,6 @@ public class BoardScript : MonoBehaviour
                 boardPieces[i, j].GetComponent<BoxCollider2D>().enabled = (hit.transform == null);
             }
         }
-    }
-
-    private void CheckGameOver()
-    {
-        for (int i = 0; i < boardWidth; i++)
-        {
-            for (int j = 0; j < boardHeight; j++)
-            {
-                if(!boardPieces[i, j].IsTileOn)
-                {
-                    int adjacentBoardPieceWithoutTileOnCount = 0;
-                    if (0 < i && !boardPieces[i - 1, j].IsTileOn)
-                        adjacentBoardPieceWithoutTileOnCount += 1;
-
-                    if (i < boardWidth-1 && !boardPieces[i + 1, j].IsTileOn)
-                        adjacentBoardPieceWithoutTileOnCount += 1;
-
-                    if (0 < j && !boardPieces[i, j - 1].IsTileOn)
-                        adjacentBoardPieceWithoutTileOnCount += 1;
-
-                    if (j < boardHeight-1 && !boardPieces[i, j+1].IsTileOn)
-                        adjacentBoardPieceWithoutTileOnCount += 1;
-
-                    if (adjacentBoardPieceWithoutTileOnCount >= 2)
-                        return;
-                }
-            }
-        }
-
-        GameManagerScript.Instance.GameOver(tilePreview.IsFinished);
     }
 
     private void HandleInput()
@@ -200,7 +198,7 @@ public class BoardScript : MonoBehaviour
                     Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.touches[0].position);
                     if (lastTilePlacedOverBox.OverlapPoint(worldPoint))
                     {
-                        ResetLastTileOverBoard();
+                        UpdateLastTileOverBoard();
                     }
                     else
                     {
@@ -210,13 +208,14 @@ public class BoardScript : MonoBehaviour
                     }
                     break;
                 case TouchPhase.Ended:
-                    if (boardPiecesWithTilesAbove.Count < minClearCount)
+                    if (boardPiecesWithTilesAbove.Count >= minClearCount
+                        || boardPiecesWithTilesAbove.Count == tilePreview.TilesLeft)
                     {
-                        ResetTilesOverBoard();
+                        PlaceTilesOnBoard();
                     }
                     else
                     {
-                        PlaceTilesOnBoard();
+                        ResetTilesOverBoard();
                     }
                     break;
             }
@@ -227,7 +226,7 @@ public class BoardScript : MonoBehaviour
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             if (lastTilePlacedOverBox.OverlapPoint(worldPoint))
             {
-                ResetLastTileOverBoard();
+                UpdateLastTileOverBoard();
             }
             else
             {
@@ -238,12 +237,14 @@ public class BoardScript : MonoBehaviour
         }
         else if (Input.GetMouseButtonUp(0))
         {
-            if(boardPiecesWithTilesAbove.Count < minClearCount)
-            {
-                ResetTilesOverBoard();
-            } else
+            if (boardPiecesWithTilesAbove.Count >= minClearCount
+                        || tilePreview.TilesLeft == 0)
             {
                 PlaceTilesOnBoard();
+            }
+            else
+            {
+                ResetTilesOverBoard();
             }
         }
         else if (Input.GetMouseButton(2))
@@ -320,16 +321,19 @@ public class BoardScript : MonoBehaviour
 
     private void PlaceTilesOnBoard()
     {
-        for (int i = 0; i < boardPiecesWithTilesAbove.Count; i++)
+        if (boardPiecesWithTilesAbove.Count > 0)
         {
-            StartCoroutine(boardPiecesWithTilesAbove[i].DropTile(tilesOnBoard, tileSpawnDelay * i));
+            for (int i = 0; i < boardPiecesWithTilesAbove.Count; i++)
+            {
+                StartCoroutine(boardPiecesWithTilesAbove[i].DropTile(tilesOnBoard, tileSpawnDelay * i));
+            }
+            boardPiecesWithTilesAbove.Clear();
+            tilePreview.FlushBuffer();
+            GameManagerScript.Instance.IncrementTurnsTook();
         }
-        boardPiecesWithTilesAbove.Clear();
-        tilePreview.FlushBuffer();
-        GameManagerScript.Instance.IncrementTurnsTook();
     }
 
-    private void ResetLastTileOverBoard()
+    private void UpdateLastTileOverBoard()
     {
         BoardPieceScript lastBoardPiecesWithTilesAbove = boardPiecesWithTilesAbove[boardPiecesWithTilesAbove.Count - 1];
         lastBoardPiecesWithTilesAbove.ClearAboveTile();
