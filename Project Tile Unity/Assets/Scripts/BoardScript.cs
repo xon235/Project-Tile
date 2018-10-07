@@ -50,8 +50,8 @@ public class BoardScript : MonoBehaviour
     private void InitBoard()
     {
         boardPieces = new BoardPieceScript[boardWidth, boardHeight];
-        float boardPieceWidth = boardPiecePrefab.GetComponent<Renderer>().bounds.size.x;
-        float boardPieceHeight = boardPiecePrefab.GetComponent<Renderer>().bounds.size.y;
+        float boardPieceWidth = boardPiecePrefab.GetComponent<Renderer>().bounds.size.x * transform.localScale.x;
+        float boardPieceHeight = boardPiecePrefab.GetComponent<Renderer>().bounds.size.y * transform.localScale.y;
         float initialXOffset = -boardPieceWidth * boardWidth / 2 + boardPieceWidth/2;
         float initialYOffset = -boardPieceHeight * boardHeight / 2 + boardPieceHeight / 2;
 
@@ -71,7 +71,7 @@ public class BoardScript : MonoBehaviour
             }
         }
 
-        ground.transform.localPosition = new Vector3(0, -boardPieceHeight * boardHeight / 2, 0);
+        ground.transform.localPosition = new Vector3(0, -boardPieceHeight * boardHeight / transform.localScale.y / 2, 0);
         IsTilesMoving = false;
     }
 
@@ -198,7 +198,7 @@ public class BoardScript : MonoBehaviour
                     Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.touches[0].position);
                     if (lastTilePlacedOverBox.OverlapPoint(worldPoint))
                     {
-                        UpdateLastTileOverBoard();
+                        RollBackLastTileOverBoard();
                     }
                     else
                     {
@@ -226,7 +226,7 @@ public class BoardScript : MonoBehaviour
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             if (lastTilePlacedOverBox.OverlapPoint(worldPoint))
             {
-                UpdateLastTileOverBoard();
+                RollBackLastTileOverBoard();
             }
             else
             {
@@ -291,6 +291,7 @@ public class BoardScript : MonoBehaviour
         {
             TileColor colorName = GameManagerScript.Instance.GetTileColor(tilePreview.GetCurrentTileColor());
             TileScript tile = Instantiate(tilePrefab, transform).GetComponent<TileScript>();
+            
             tile.InitTile(colorName, false, GameManagerScript.Instance.GetTilePoint(boardPiecesWithTilesAbove.Count));
 
             boardPiece.PlaceTileOver(tile, tileSpawnOffset);
@@ -333,7 +334,7 @@ public class BoardScript : MonoBehaviour
         }
     }
 
-    private void UpdateLastTileOverBoard()
+    private void RollBackLastTileOverBoard()
     {
         BoardPieceScript lastBoardPiecesWithTilesAbove = boardPiecesWithTilesAbove[boardPiecesWithTilesAbove.Count - 1];
         lastBoardPiecesWithTilesAbove.ClearAboveTile();
