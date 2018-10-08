@@ -7,8 +7,6 @@ public class BoardScript : MonoBehaviour
 {
     public int boardWidth;
     public int boardHeight;
-    public int numOfPreviewTiles;
-    public int previewSeed;
     public GameObject tilePrefab;
     public GameObject boardPiecePrefab;
     public GameObject boardPiecesHolder;
@@ -35,11 +33,6 @@ public class BoardScript : MonoBehaviour
         {
             _isTilesMoving = value;
         }
-    }
-
-    private void Awake()
-    {
-        tilePreview.InitTilePreview(numOfPreviewTiles, previewSeed);
     }
 
     void Start ()

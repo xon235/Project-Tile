@@ -9,11 +9,12 @@ public class TilePreviewScript : MonoBehaviour
     public float tileScale;
     public float tileOffset;
     public float smoothTime;
+    public int numOfPreviewTiles;
+    public int previewSeed;
+    public ColorName[] customSequence;
 
     public bool IsFinished { get; private set; }
 
-    private int numOfPreviewTiles;
-    private int previewSeed;
     private float tileWidth;
     private List<TileScript> tiles = new List<TileScript>();
     private Vector3 targetPosition;
@@ -43,24 +44,26 @@ public class TilePreviewScript : MonoBehaviour
         }
     }
 
-    public void InitTilePreview(int numOfPreviewTiles, int previewSeed)
-    {
-        this.numOfPreviewTiles = numOfPreviewTiles;
-        this.previewSeed = previewSeed;
-    }
-
     void Start ()
     {
         tileWidth = tilePrefab.GetComponent<Renderer>().bounds.size.x;
         targetPosition =transform.position;
         tileHolderVelocity = Vector3.zero;
 
-        InitTiles(previewSeed);
+        if(customSequence.Length == 0)
+        {
+            InitRandomTiles();
+        } else
+        {
+            InitCustomTiles();
+        }
+
+        CurrentTileIndex = 0;
     }
 
-    private void InitTiles(int seed)
+    private void InitRandomTiles()
     {
-        Random.InitState(seed);
+        Random.InitState(previewSeed);
 
         int lastlastRandom, lastRandom, currentRandom;
         lastlastRandom = lastRandom = currentRandom = -1;
@@ -88,11 +91,31 @@ public class TilePreviewScript : MonoBehaviour
             lastlastRandom = lastRandom;
             lastRandom = currentRandom;
         }
-
-        CurrentTileIndex = 0;
     }
-	
-	void Update ()
+
+    private void InitCustomTiles()
+    {
+        numOfPreviewTiles = customSequence.Length;
+        for(int i = 0; i < customSequence.Length; i++)
+        {
+            TileScript tile = Instantiate(
+                tilePrefab,
+                tileHolder.transform.position + new Vector3(i * tileOffset, 0, 0),
+                Quaternion.identity,
+                tileHolder.transform).GetComponent<TileScript>();
+
+            tile.transform.localScale *= tileScale;
+            tiles.Add(tile);
+
+            tile.GetComponent<TileScript>().InitTile(
+                GameManagerScript.Instance.GetTileColor(customSequence[i]),
+                true,
+                GameManagerScript.Instance.GetTilePoint());
+        }
+    }
+
+
+    void Update ()
     {
 
         if (tileHolder.transform.position != targetPosition)
