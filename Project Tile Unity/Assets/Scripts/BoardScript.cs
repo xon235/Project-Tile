@@ -78,8 +78,14 @@ public class BoardScript : MonoBehaviour
             {
                 if (wasTilesMoving != IsTilesMoving)
                 {
-                    ClearTiles();
-                    CheckGameOver();
+                    if (ClearTiles() == 0)
+                    {
+                        CheckGameOver();
+                    } else
+                    {
+                        IsTilesMoving = true;
+                    }
+                    
                     UpdatePlaceableTiles();
                 }
                 HandleInput();
