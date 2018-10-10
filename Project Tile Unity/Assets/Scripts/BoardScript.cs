@@ -208,7 +208,7 @@ public class BoardScript : MonoBehaviour
                     break;
                 case TouchPhase.Ended:
                     if (boardPiecesWithTilesAbove.Count >= minClearCount
-                        || boardPiecesWithTilesAbove.Count == tilePreview.TilesLeft)
+                        || tilePreview.TilesLeft == 0)
                     {
                         PlaceTilesOnBoard();
                     }
